@@ -54,6 +54,12 @@ protected:
 	UFUNCTION()
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_OnFire(FVector Location, FRotator Rotation);
+	bool Server_OnFire_Validate(FVector Location, FRotator Rotation);
+	void Server_OnFire_Implementation(FVector Location, FRotator Rotation);
+	
+
 private:
 	/** The Character holding this weapon*/
 	AUnrealStudyCharacter* Character;

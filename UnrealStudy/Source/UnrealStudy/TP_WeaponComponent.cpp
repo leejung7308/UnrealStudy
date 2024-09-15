@@ -27,7 +27,6 @@ void UTP_WeaponComponent::Fire()
 	{
 		return;
 	}
-
 	// Try and fire a projectile
 	if (ProjectileClass != nullptr)
 	{
@@ -45,6 +44,9 @@ void UTP_WeaponComponent::Fire()
 	
 			// Spawn the projectile at the muzzle
 			World->SpawnActor<AUnrealStudyProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
+			
+			Server_OnFire(SpawnLocation, SpawnRotation);
+			
 		}
 	}
 	
@@ -65,6 +67,15 @@ void UTP_WeaponComponent::Fire()
 		}
 	}
 }
+bool UTP_WeaponComponent::Server_OnFire_Validate(FVector Location, FRotator Rotation)
+{
+	return true;
+}
+
+void UTP_WeaponComponent::Server_OnFire_Implementation(FVector Location, FRotator Rotation)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Server_OnFire_Implementation"));
+}
 
 bool UTP_WeaponComponent::AttachWeapon(AUnrealStudyCharacter* TargetCharacter)
 {
@@ -82,6 +93,7 @@ bool UTP_WeaponComponent::AttachWeapon(AUnrealStudyCharacter* TargetCharacter)
 
 	// add the weapon as an instance component to the character
 	Character->AddInstanceComponent(this);
+	
 
 	// Set up action bindings
 	if (APlayerController* PlayerController = Cast<APlayerController>(Character->GetController()))
