@@ -45,8 +45,12 @@ void UTP_WeaponComponent::Fire()
 			// Spawn the projectile at the muzzle
 			World->SpawnActor<AUnrealStudyProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
 			
-			Server_OnFire(SpawnLocation, SpawnRotation);
-			
+			AActor* Owner = GetOwner();
+
+			if (Owner && !(Owner->HasAuthority()))
+			{
+				Server_OnFire(SpawnLocation, SpawnRotation);
+			}
 		}
 	}
 	
@@ -74,7 +78,11 @@ bool UTP_WeaponComponent::Server_OnFire_Validate(FVector Location, FRotator Rota
 
 void UTP_WeaponComponent::Server_OnFire_Implementation(FVector Location, FRotator Rotation)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Server_OnFire_Implementation"));
+	UE_LOG(LogTemp, Warning, TEXT("Server_OnFire_Implementation")); 
+	FActorSpawnParameters ActorSpawnParams;
+	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+
+	GetWorld()->SpawnActor<AUnrealStudyProjectile>(ProjectileClass, Location, Rotation, ActorSpawnParams);
 }
 
 bool UTP_WeaponComponent::AttachWeapon(AUnrealStudyCharacter* TargetCharacter)
